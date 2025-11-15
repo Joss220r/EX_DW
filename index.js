@@ -45,7 +45,7 @@ app.get('/api/messages', async (req, res) => {
     
     try {
         const pool = await dbPool;
-        const result = await pool.request().query('SELECT Login_Emisor, Contenido FROM [dbo].[Chat_Mensaje] ORDER BY Cod_Mensaje ASC');
+        const result = await pool.request().query('SELECT Login_Emisor, Contenido FROM [dbo].[Chat_Mensaje] ORDER BY ID_Mensaje ASC');
         res.json({
             ok: true,
             messages: result.recordset
