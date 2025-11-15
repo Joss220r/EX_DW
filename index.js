@@ -56,28 +56,6 @@ app.get('/api/messages', async (req, res) => {
     }
 });
 
-// Temporary route to get table schema
-app.get('/api/schema', async (req, res) => {
-    if (!dbPool) {
-        return res.status(503).json({ ok: false, message: 'Database connection not available.' });
-    }
-    try {
-        const pool = await dbPool;
-        const result = await pool.request().query(`
-            SELECT COLUMN_NAME, DATA_TYPE 
-            FROM INFORMATION_SCHEMA.COLUMNS 
-            WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Chat_Mensaje'
-        `);
-        res.json({
-            ok: true,
-            columns: result.recordset
-        });
-    } catch (error) {
-        console.error('Error getting schema:', error);
-        res.status(500).json({ ok: false, message: 'Error getting table schema.' });
-    }
-});
-
 // Fallback route for Single Page Applications
 // This should be the last route. It sends index.html for any request that doesn't match a static file or API route.
 app.get('*', (req, res) => {
