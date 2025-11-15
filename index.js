@@ -6,8 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Database connection configuration
-// The connection string should be set in the DB_URL environment variable
-// Example format: "mssql://usr_DesaWebDevUMG:!ngGuast@360@svr-sql-ctezo.southcentralus.cloudapp.azure.com/db_DesaWebDevUMG?encrypt=true"
 const dbUrl = process.env.DB_URL;
 
 let dbPool;
@@ -23,9 +21,10 @@ if (dbUrl) {
     console.warn('DB_URL environment variable not set. Database-dependent endpoints will not work.');
 }
 
-
 // Middlewares
 app.use(express.json());
+
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
@@ -47,7 +46,8 @@ app.get('/api/messages', async (req, res) => {
     }
 });
 
-// Serve frontend for any other route
+// Fallback route for Single Page Applications
+// This should be the last route. It sends index.html for any request that doesn't match a static file or API route.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
