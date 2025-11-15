@@ -5,12 +5,22 @@ const sql = require('mssql');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Database connection configuration
-const dbUrl = process.env.DB_URL;
+
+const dbConfig = {
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    options: {
+        encrypt: true,
+        trustServerCertificate: false 
+    }
+};
 
 let dbPool;
-if (dbUrl) {
-    dbPool = new sql.ConnectionPool(dbUrl)
+
+if (dbConfig.server && dbConfig.user && dbConfig.password && dbConfig.database) {
+    dbPool = new sql.ConnectionPool(dbConfig)
         .connect()
         .then(pool => {
             console.log('Connected to SQL Server');
@@ -18,7 +28,7 @@ if (dbUrl) {
         })
         .catch(err => console.error('Database Connection Failed! Bad Config: ', err));
 } else {
-    console.warn('DB_URL environment variable not set. Database-dependent endpoints will not work.');
+    console.warn('Database environment variables (DB_SERVER, DB_DATABASE, DB_USER, DB_PASSWORD) are not fully set. Database-dependent endpoints will not work.');
 }
 
 // Middlewares
