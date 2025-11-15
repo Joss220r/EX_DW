@@ -1,79 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // URLs de la API externa
-    const AUTH_API_URL = 'https://backcvbgtmdesa.azurewebsites.net/api/login/authenticate';
+    // URLs de la API
     const MESSAGES_API_URL = 'https://backcvbgtmdesa.azurewebsites.net/api/Mensajes';
-    
-    // URL de nuestra propia API para obtener mensajes
     const LOCAL_MESSAGES_API = '/api/messages';
 
-    // Vistas
-    const loginView = document.getElementById('login-view');
+    // --- Guardia de Autenticación ---
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.href = '/login.html';
+        return; // Detener la ejecución del script si no hay token
+    }
+
+    // Vistas y elementos de la página de chat
     const appView = document.getElementById('app-view');
-
-    // Formulario de Login (Serie I)
-    const loginForm = document.getElementById('login-form');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginError = document.getElementById('login-error');
-
-    // App principal
     const logoutBtn = document.getElementById('logout-btn');
     const messagesContainer = document.getElementById('messages-container');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
 
-    // --- Lógica Principal ---
+    // Mostrar la vista de la app
+    appView.style.display = 'block';
 
-    // 1. Comprobar el estado de autenticación al cargar la página
-    function checkAuthState() {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            loginView.style.display = 'none';
-            appView.style.display = 'block';
-            fetchAndRenderMessages();
-        } else {
-            loginView.style.display = 'flex';
-            appView.style.display = 'none';
-        }
-    }
+    // --- Lógica Principal del Chat ---
 
-    // 2. Manejar el inicio de sesión (Serie I)
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loginError.style.display = 'none';
-
-        const username = usernameInput.value;
-        const password = passwordInput.value;
-
-        try {
-            const response = await fetch(AUTH_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ Username: username, Password: password })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Usuario o contraseña incorrectos.');
-            }
-
-            const data = await response.json();
-            localStorage.setItem('authToken', data.token);
-            checkAuthState();
-
-        } catch (error) {
-            loginError.textContent = error.message;
-            loginError.style.display = 'block';
-        }
-    });
-
-    // 3. Manejar el cierre de sesión
+    // 1. Manejar el cierre de sesión
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('authToken');
-        checkAuthState();
+        window.location.href = '/login.html';
     });
 
-    // 4. Obtener y mostrar mensajes de la DB (Serie III)
+    // 2. Obtener y mostrar mensajes de la DB
     async function fetchAndRenderMessages() {
         messagesContainer.innerHTML = '<p class="text-center">Cargando mensajes...</p>';
         try {
@@ -104,13 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Enviar un nuevo mensaje (Serie II)
+    // 3. Enviar un nuevo mensaje
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
         const content = messageInput.value.trim();
 
-        if (!content || !token) return;
+        if (!content) return;
 
         try {
             const response = await fetch(MESSAGES_API_URL, {
@@ -140,6 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Iniciar la aplicación
-    checkAuthState();
+    // Iniciar la aplicación de chat
+    fetchAndRenderMessages();
 });
