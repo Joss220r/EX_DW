@@ -13,7 +13,7 @@ const dbConfig = {
     password: process.env.DB_PASSWORD,
     options: {
         encrypt: true,
-        trustServerCertificate: false 
+        trustServerCertificate: true
     }
 };
 
