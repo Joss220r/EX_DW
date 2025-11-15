@@ -1,0 +1,21 @@
+{
+  "name": "render-express-base",
+  "version": "1.0.0",
+  "description": "Proyecto base con Express y frontend estático para Render.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "render",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mssql": "^12.1.0"
+  }
+}
