@@ -37,7 +37,7 @@ app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API routes
+// API route to get messages
 app.get('/api/messages', async (req, res) => {
     if (!dbPool) {
         return res.status(503).json({ ok: false, message: 'Database connection not available.' });
@@ -56,10 +56,9 @@ app.get('/api/messages', async (req, res) => {
     }
 });
 
-// Fallback route for Single Page Applications
-// This should be the last route. It sends index.html for any request that doesn't match a static file or API route.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Main route redirects to the login page
+app.get('/', (req, res) => {
+    res.redirect('/login.html');
 });
 
 app.listen(PORT, () => {
